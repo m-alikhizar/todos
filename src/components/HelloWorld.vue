@@ -7,9 +7,8 @@
           autofocus autocomplete="off"
           placeholder="What needs to be done?"
           v-model="newTodo"
-          :style="{border: '2px solid' + color}"
-          @keyup.enter="addTodo"
-          @keydown="randomize">
+          :style="{border: '2px solid' + (newTodo ? palette[Math.floor((Math.random() * palette.length) + 1)] : palette[0])}"
+          @keyup.enter="addTodo">
       </header>
       <section class="main" v-show="todos.length" v-cloak>
         <input class="toggle-all" type="checkbox" v-model="allDone">
@@ -17,6 +16,7 @@
           <li v-for="todo in filteredTodos"
             class="todo"
             :key="todo.id"
+            :style="{border: '2px solid' + (newTodo ? palette[Math.floor((Math.random() * palette.length) + 1)] : palette[0])}"
             :class="{ completed: todo.completed, editing: todo == editedTodo }">
             <div class="view">
               <input class="toggle" type="checkbox" v-model="todo.completed">
@@ -32,7 +32,7 @@
           </li>
         </ul>
       </section>
-      <footer class="footer" v-show="todos.length" v-cloak>
+      <footer class="footer" v-show="todos.length" v-cloak :style="{border: '2px solid' + (newTodo ? palette[Math.floor((Math.random() * palette.length) + 1)] : palette[0]) }">
         <span class="todo-count">
           <strong>{{ remaining }}</strong> {{ remaining | pluralize }} left
         </span>
@@ -54,17 +54,6 @@
 
 <script>
 
-  // localStorage persistence
-  var STORAGE_KEY = 'todos-vuejs-2.0'
-  var todoStorage = {
-    save: function (todos) {
-
-      firebase.database().ref('/todos').set(JSON.stringify(todos));
-
-      // localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-    }
-  }
-
   // visibility filters
   var filters = {
     all: function (todos) {
@@ -82,6 +71,8 @@
     }
   }
 
+  var uid = '';
+
   export default {
     name: 'HelloWorld',
     data: () => ({
@@ -89,13 +80,13 @@
       newTodo: '',
       editedTodo: null,
       visibility: 'all',
-      color: palette[0]
+      palette: palette
     }),
     // watch todos change for localStorage persistence
     watch: {
       todos: {
         handler: function (todos) {
-          todoStorage.save(todos)
+          firebase.database().ref('/todos').set(JSON.stringify(todos));
         },
         deep: true
       }
@@ -129,22 +120,13 @@
     // methods that implement data logic.
     // note there's no DOM manipulation here at all.
     methods: {
-
-      randomize: function(e) {
-        // console.log(e.target.value);((
-        if(e.target.value) {
-          this.color = palette[Math.floor((Math.random() * palette.length) + 1)];
-        } else {
-          this.color = palette[0];
-        }
-      },
       addTodo: function () {
         var value = this.newTodo && this.newTodo.trim()
         if (!value) {
           return
         }
         this.todos.push({
-          id: todoStorage.uid++,
+          id: uid++,
           title: value,
           completed: false
         })
@@ -205,7 +187,7 @@
         todos.forEach(function (todo, index) {
           todo.id = index
         })
-        todoStorage.uid = todos.length;
+        uid = todos.length;
 
         that.todos = todos;
       });
@@ -228,18 +210,23 @@
   };
 
   const palette = [
-    'transparent',
-    '#ffde00',
-    '#0936ff',
-    '#ff0466',
-    '#ffc003',
-    '#7f39fb',
-    '#b00020',
-    '#05dbc5',
-    '#bb86fc',
-    '#ff7fab',
-    '#b2ff59',
-    '#ffac36'
+    '#ffffff',
+    '#ffde00a6',
+    '#05dbc57a',
+    '#ff7fab8a',
+    '#b2ff59d6',
+    '#ffac36a6'
 
   ]
 </script>
+
+<style>
+/* body {
+  color: transparent;
+  color: #ffde00;
+  color: #05dbc5;
+  color: #ff7faba6;
+  color: #b2ff59d6;
+  color: #ffac36a6;
+} */
+</style>

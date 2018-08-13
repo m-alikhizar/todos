@@ -158,7 +158,7 @@ label[for="toggle-all"] {
 .todo-list li {
   position: relative;
   font-size: 24px;
-  border-bottom: 1px solid #ededed;
+  margin-top: -2px;
 }
 
 .todo-list li:last-child {
@@ -257,7 +257,7 @@ label[for="toggle-all"] {
   padding: 10px 15px;
   height: 20px;
   text-align: center;
-  border-top: 1px solid #e6e6e6;
+  margin-top: -2px;
 }
 
 .footer:before {
